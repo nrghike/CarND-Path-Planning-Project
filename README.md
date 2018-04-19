@@ -1,6 +1,29 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
-   
+
+### Write Up
+
+
+I decided to follow the approach mentioned in live walkthrough video with some of my additions.
+The path planning implementation works through a series of steps to generate smooth and robust paths. 
+First, it extracts the current vehicle state; cartesian coordinates x, y and yaw, frenet coordinates s and d, and the current speed of the car. 
+
+Next, it checks for informations of cars in front of us. If we have a car in front of us going at a speed greater than or equal to speed limit, we will follow the car. Lane change is risky business and we want to avoid it as far as possible. 
+Now if the vehicle in same Lane as us is below speed limit, the sensor fusion data is extracted, containing the information on nearby vehicles in adjacent lanes.  
+
+After extraction, the planner steps through each detected vehicle and projects their path forward. Those that are projected to infringe on the area the planner forecasts into are noted.
+
+Next the planner decides if the current lane is blocked, and if so, attempts to initiate a lane change. The availability of neighbouring lanes is calculated exclusively, if any condition makes a lane unsuitable, the lane is considered unavailable for the rest of the current planning cycle. All else being equal, changes to the left are preferred. You will find this logic at Line 316 of main.cpp file 
+
+Next, waypoints are generated forward at an increment of the safety gap. At the same time a basic speed control algorithm is implemented so as avoid collisions with slow moving vehicles. We also want to avoid any kind of frequent lane changes. Hence, we a check at line 399 to avoid frequent lane changes.
+
+At this point, the planner converts the waypoints from global coordinates to vehicle coordinates to simplify the math. These converted waypoints are passed to a spline from the C++ spline library (http://kluge.in-chemnitz.de/opensource/spline/) to create smooth paths. 
+
+Finally, new path points are added to the existing path points list until it has points equal to the number of plan points. The additional points are generated along the previously created spline utilizing a persistent velocity reference value. The velocity reference is modified at each step to more closely approximate the target velocity. The target velocity is modified based on the conditions found by the extraction and projection process. 
+
+The result of this video can be found at the link below:
+https://youtu.be/4OWm7sgKBAY
+
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).
 
